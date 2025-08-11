@@ -4,6 +4,8 @@ use rand::{rng, Rng};
 
 mod genetic_algorithm;
 
+const NO_CITIES: i32 = 4;
+
 #[derive(Debug, Eq, Hash, PartialEq)]
 struct Route {
     source: String,
@@ -14,17 +16,32 @@ struct Route {
 fn main() {
     let (cities, routes) = read_cities_and_routes();
 
-    let starting_city = get_starting_city(cities);
-    println!("Starting city: {:?}", starting_city);
+    let (starting_city, selected_cities) = get_starting_city_and_cities(cities);
+
+    let selected_routes = routes.iter().filter(|route| selected_cities.contains(&route.source) && selected_cities.contains(&route.destination) ).collect::<Vec<&Route>>();
+
+    println!("Starting city: {:?}, selected cities: {:?}", starting_city, selected_cities);
+    println!("Selected routes: {:?}", selected_routes);
     // println!("{:?}", cities);
     // println!("{:?}", routes);
 }
 
-fn get_starting_city(cities: HashSet<String>) -> String {
-    let cities_vec: Vec<_> = cities.iter().collect();
-    let index = rng().random_range(0..cities_vec.len());
+fn get_starting_city_and_cities(cities: HashSet<String>) -> (String, HashSet<String>) {
+    let mut i = 0;
+    let mut cities_vec: Vec<_> = cities.iter().collect();
+    let mut selected_cities = HashSet::new();
+    loop {
+        i += 1;
 
-    cities_vec[index].clone()
+        let index = rng().random_range(0..cities_vec.len());
+        let starting_city = cities_vec[index].clone();
+
+        selected_cities.insert(starting_city.clone());
+        cities_vec.remove(index);
+        if i >= NO_CITIES {
+            break (starting_city, selected_cities);
+        }
+    }
 }
 
 fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
