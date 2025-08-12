@@ -8,7 +8,7 @@
 
 // Function to generate new solutions
     // Generate population which is just a list of Genomes
-    // Population = List[Genom]
+    // Population = List[Genome]
 
     // fn generate_population() -> Population {
     //      let population = []
@@ -20,7 +20,7 @@
 
 // Fitness function to evaluate solutions
     // Thing = ['source', 'dest', 'weight']
-    //     fn fitness_funtion(genome: Genom, nodes: List[Nodes], visited_nodes: List[Nodes]) -> i32 {
+    //     fn fitness_function(genome: Genome, nodes: List[Nodes], visited_nodes: List[Nodes]) -> i32 {
     //         if len(genome) != len(nodes) {
     //             throw Error();
     //         }
