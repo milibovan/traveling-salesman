@@ -7,6 +7,7 @@ mod tour;
 pub const NO_CITIES: i32 = 4;
 
 #[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Clone)]
 struct Route {
     source: String,
     destination: String,
@@ -14,6 +15,6 @@ struct Route {
 }
 
 fn main() {
-    let tour = Tour::create_tour();
+    let tour = Tour::init_tour();
     println!("{:?}", tour);
 }
