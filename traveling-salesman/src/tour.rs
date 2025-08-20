@@ -6,7 +6,7 @@ use crate::{Route, NO_CITIES};
 #[derive(Debug)]
 pub struct Tour {
     cities: Vec<String>,
-    total_distance: f64
+    total_distance: f32
 }
 
 impl Tour {
@@ -16,29 +16,24 @@ impl Tour {
 
         let mut visited_cities: Vec<String> = Vec::new();
 
-        let mut index = rng().random_range(0..selected_cities.len());
-
-        let starting_city = &selected_cities[index];
 
         while visited_cities.len() != selected_cities.len() {
-            if visited_cities.len() != 0 {
-                index = rng().random_range(0..selected_cities.len());
-            }
+            let index = rng().random_range(0..selected_cities.len());
             if !visited_cities.contains(&selected_cities[index]) {
                 visited_cities.push(selected_cities[index].clone());
             }
         }
 
-        let mut total_distance:f64 = 0f64;
+        let mut total_distance:f32 = 0f32;
 
         for i in 0..visited_cities.len().saturating_sub(1) {
             let source = &visited_cities[i];
             let destination = &visited_cities[i+1];
 
             if let Some(route) = routes.iter().find(|r| (r.source == *source && r.destination == *destination) || (r.source == *destination && r.destination == *source)) {
-                total_distance += route.distance as f64;
+                total_distance += route.distance as f32;
             } else {
-                total_distance += f64::INFINITY;
+                total_distance += f32::INFINITY;
             }
             println!("{} -> {}", source, destination);
         }
@@ -47,9 +42,9 @@ impl Tour {
         let destination = &visited_cities[0];
 
         if let Some(route) = routes.iter().find(|r| (r.source == *source && r.destination == *destination) || (r.source == *destination && r.destination == *source)) {
-            total_distance += route.distance as f64;
+            total_distance += route.distance as f32;
         } else {
-            total_distance += f64::INFINITY;
+            total_distance += f32::INFINITY;
         }
 
         println!("{} -> {}", source, destination);
