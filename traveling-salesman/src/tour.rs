@@ -6,34 +6,56 @@ use crate::{Route, NO_CITIES};
 #[derive(Debug)]
 pub struct Tour {
     cities: Vec<String>,
-    routes: Vec<Route>,
-    total_distance: i32
+    total_distance: f64
 }
 
 impl Tour {
-    pub fn init_tour() -> Tour {
-        let (cities, routes) = read_cities_and_routes();
-        let selected_cities: Vec<String> = get_random_cities(cities).iter().cloned().collect();
+    pub fn init_tour(selected_cities: Vec<String>, routes: HashSet<Route>) -> Tour {
 
-        let selected_routes: Vec<Route> = routes
-            .into_iter()
-            .filter(|route| selected_cities.contains(&route.source) && selected_cities.contains(&route.destination))
-            .collect();
+        // let mut selected_tour_routes: Vec<Route> = Vec::new();
 
-        // init visited_cities
-        let mut visited_cities: HashSet<String> = HashSet::new();
+        let mut visited_cities: Vec<String> = Vec::new();
 
-        // get index of starting city
-        let index = rng().random_range(0..selected_cities.len());
+        let mut index = rng().random_range(0..selected_cities.len());
 
-        // select starting city
-        let mut starting_city = &selected_cities[index];
+        let starting_city = &selected_cities[index];
 
-        let mut selected_tour_routes: Vec<Route> = Vec::new();
-
-        // println!("{:?}", selected_routes);
-        // while all cities aren't visited
         while visited_cities.len() != selected_cities.len() {
+            if visited_cities.len() != 0 {
+                index = rng().random_range(0..selected_cities.len());
+            }
+            if !visited_cities.contains(&selected_cities[index]) {
+                visited_cities.push(selected_cities[index].clone());
+            }
+        }
+
+        let mut total_distance:f64 = 0f64;
+
+        for i in 0..visited_cities.len().saturating_sub(1) {
+            let source = &visited_cities[i];
+            let destination = &visited_cities[i+1];
+
+            if let Some(route) = routes.iter().find(|r| (r.source == *source && r.destination == *destination) || (r.source == *destination && r.destination == *source)) {
+                total_distance += route.distance as f64;
+            } else {
+                total_distance += f64::INFINITY;
+            }
+            println!("{} -> {}", source, destination);
+        }
+
+        let source = &visited_cities[visited_cities.len()-1];
+        let destination = &visited_cities[0];
+
+        if let Some(route) = routes.iter().find(|r| (r.source == *source && r.destination == *destination) || (r.source == *destination && r.destination == *source)) {
+            total_distance += route.distance as f64;
+        } else {
+            total_distance += f64::INFINITY;
+        }
+
+        println!("{} -> {}", source, destination);
+
+        // while all cities aren't visited
+        /*while visited_cities.len() != selected_cities.len() {
         visited_cities.insert(starting_city.clone());
             if let Some((_, mut route)) = selected_routes
                 .iter()
@@ -73,16 +95,10 @@ impl Tour {
             let oriented_route = Self::orient_route(&mut starting_city, &mut route);
 
             selected_tour_routes.push(oriented_route.clone());
-        }
-
-        // println!("{:?}", visited_cities);
-        // println!("{:?}", selected_tour_routes);
-
-        let total_distance = selected_tour_routes.iter().map(|route| route.distance).sum();
+        }*/
 
         Tour {
-            cities: selected_cities,
-            routes: selected_tour_routes,
+            cities: visited_cities,
             total_distance,
         }
     }
