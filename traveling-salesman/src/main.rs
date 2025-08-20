@@ -1,4 +1,4 @@
-use crate::tour::{get_random_cities, read_cities_and_routes, Tour};
+use crate::population::Population;
 
 mod genetic_algorithm;
 mod population;
@@ -15,8 +15,6 @@ struct Route {
 }
 
 fn main() {
-    let (cities, routes) = read_cities_and_routes();
-    let selected_cities: Vec<String> = get_random_cities(cities).iter().cloned().collect();
-    let tour = Tour::init_tour(selected_cities, routes);
-    println!("{:?}", tour);
+    let mut population = Population::new();
+    population.init_tours();
 }

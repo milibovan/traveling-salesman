@@ -3,10 +3,11 @@ use std::fs;
 use rand::{rng, Rng};
 use crate::{Route, NO_CITIES};
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Clone)]
 pub struct Tour {
     cities: Vec<String>,
-    total_distance: f32
+    total_distance: i32
 }
 
 impl Tour {
@@ -35,7 +36,7 @@ impl Tour {
             } else {
                 total_distance += f32::INFINITY;
             }
-            println!("{} -> {}", source, destination);
+            // println!("{} -> {}", source, destination);
         }
 
         let source = &visited_cities[visited_cities.len()-1];
@@ -47,7 +48,7 @@ impl Tour {
             total_distance += f32::INFINITY;
         }
 
-        println!("{} -> {}", source, destination);
+        // println!("{} -> {}", source, destination);
 
         // while all cities aren't visited
         /*while visited_cities.len() != selected_cities.len() {
@@ -94,7 +95,7 @@ impl Tour {
 
         Tour {
             cities: visited_cities,
-            total_distance,
+            total_distance: total_distance as i32
         }
     }
 
