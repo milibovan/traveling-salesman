@@ -7,7 +7,7 @@ use crate::{Route, NO_CITIES};
 #[derive(Clone)]
 pub struct Tour {
     cities: Vec<String>,
-    total_distance: i32
+    pub(crate) total_distance: i32
 }
 
 impl Tour {

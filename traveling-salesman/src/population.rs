@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::fmt::Debug;
 use crate::Route;
 use crate::tour::{get_random_cities, read_cities_and_routes, Tour};
 
@@ -27,5 +28,14 @@ impl Population {
             self.tours.insert(Tour::init_tour(selected_cities.clone(), routes.clone()));
         }
         println!("{:?}", self.tours);
+    }
+
+    pub fn get_fittest(&mut self) -> f32 {
+        if let Some(best_tour) = self.tours.iter().min_by_key(|tour| tour.total_distance) {
+            self.fitness = best_tour.total_distance as f32;
+        } else {
+            self.fitness = 0.0;
+        }
+        self.fitness
     }
 }
