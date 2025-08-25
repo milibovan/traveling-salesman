@@ -27,15 +27,22 @@ impl Population {
         for _ in 0..10 {
             self.tours.insert(Tour::init_tour(selected_cities.clone(), routes.clone()));
         }
-        println!("{:?}", self.tours);
+        self.get_fitness();
     }
 
     pub fn get_fittest(&mut self) -> f32 {
+        let mut fitesst = 0.0;
         if let Some(best_tour) = self.tours.iter().min_by_key(|tour| tour.total_distance) {
-            self.fitness = best_tour.total_distance as f32;
+            fitesst = best_tour.total_distance as f32;
         } else {
-            self.fitness = 0.0;
+            fitesst = 0.0;
         }
-        self.fitness
+        fitesst
+    }
+
+    pub fn get_fitness(&mut self) {
+        for tour in self.tours.iter() {
+            self.fitness += tour.total_distance as f32;
+        }
     }
 }
