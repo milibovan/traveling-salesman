@@ -16,16 +16,16 @@ impl Population {
         }
     }
 
-    pub fn init_cities_and_routes(&mut self) -> (Vec<String>, HashSet<Route>) {
-        let (cities, routes) = read_cities_and_routes();
+    pub fn init_cities(&mut self) -> Vec<String> {
+        let (cities, _) = read_cities_and_routes();
         let selected_cities: Vec<String> = get_random_cities(cities).iter().cloned().collect();
-        (selected_cities, routes)
+        selected_cities
     }
 
     pub fn init_tours(&mut self) {
-        let (selected_cities, routes) = self.init_cities_and_routes();
+        let (selected_cities) = self.init_cities();
         for _ in 0..10 {
-            self.tours.insert(Tour::init_tour(selected_cities.clone(), routes.clone()));
+            self.tours.insert(Tour::init_tour(selected_cities.clone()));
         }
         self.get_fitness();
     }

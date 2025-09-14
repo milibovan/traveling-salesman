@@ -6,17 +6,17 @@ use crate::{Route, NO_CITIES};
 #[derive(Debug, Eq, Hash, PartialEq)]
 #[derive(Clone)]
 pub struct Tour {
-    cities: Vec<String>,
+    pub(crate) cities: Vec<String>,
     pub(crate) total_distance: i32
 }
 
 impl Tour {
-    pub fn init_tour(selected_cities: Vec<String>, routes: HashSet<Route>) -> Tour {
+    pub fn init_tour(selected_cities: Vec<String>) -> Tour {
+        let (_, routes) = read_cities_and_routes();
 
         // let mut selected_tour_routes: Vec<Route> = Vec::new();
 
         let mut visited_cities: Vec<String> = Vec::new();
-
 
         while visited_cities.len() != selected_cities.len() {
             let index = rng().random_range(0..selected_cities.len());

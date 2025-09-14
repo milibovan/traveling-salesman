@@ -1,3 +1,6 @@
+use rand::{rng, Rng};
+use crate::NO_CITIES;
+use crate::tour::{read_cities_and_routes, Tour};
 // Selection function to select solutions for next generation
 //     Fitness_function = Callable([Genome], int)
 //     fn select_pair(population: Population, fitness_function: Fitness_function) -> Population {
@@ -7,16 +10,31 @@
 //         k=2)
 //     }
 
+
 // Crossover function to cut genomes and mix them
-//     fn single_point_crossover(a: Genome, b: Genome) -> Tuple[Genome, Genome] {
-//         if len(a) != len(b)
-//              throw Error
-//         if (len(a) < 2 || len(b) < 2) {
-//              return a, b
-//         }
-//         p = randint(1, len-1)
-//         return a[0:p] + b[p:], b[0:p] + a[p:];
-//     }
+fn crossover(parent1: &Tour, parent2: &Tour) -> Tour {
+    let mut cities: Vec<String> = Vec::new();
+
+    let pivot:usize = rng().random_range(0..NO_CITIES) as usize;
+
+    let mut i:usize = 0;
+    loop {
+        i += 1;
+        if i == pivot {
+            break;
+        }
+        cities.push(parent1.cities[i].clone());
+    }
+
+    for city in parent2.cities.iter() {
+        if !cities.contains(&city) {
+            cities.push(city.clone());
+        }
+    }
+
+    let child = Tour::init_tour(cities);
+    child
+}
 
 // Mutation with certain possibility mutate bits in solution
 // fn mutation(genome: Genome, num: i32 = 1, possibility = 0.5) -> Genome {
