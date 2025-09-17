@@ -1,7 +1,21 @@
 use rand::{rng, Rng};
 use crate::NO_CITIES;
+use crate::population::Population;
 use crate::tour::{Tour};
 // Selection function to select solutions for next generation
+fn selection(population: Population) -> Vec<Tour> {
+    let mut best_tours: Vec<Tour> = Vec::new();
+
+    if let Some(best_tour) = population.tours.iter().min_by_key(|tour| tour.total_distance) {
+        best_tours.push(best_tour.clone());
+    }
+
+    if let Some(second_best_tour) =population.tours.iter().filter(|tour: &&Tour| {!best_tours.contains(&tour)}).min_by_key(|tour| tour.total_distance) {
+        best_tours.push(second_best_tour.clone());
+    };
+
+    best_tours
+}
 //     Fitness_function = Callable([Genome], int)
 //     fn select_pair(population: Population, fitness_function: Fitness_function) -> Population {
 //         return choices ( population=population,
@@ -53,16 +67,6 @@ fn mutation(tour: &mut Tour){
         }
     }
 }
-
-// fn mutation(genome: Genome, num: i32 = 1, possibility = 0.5) -> Genome {
-//      for _ in range(num) {
-//          index = randrange(len(genome))
-//          if random() > possibility
-//              genome[index]
-//          else
-//              abs(genome[index] - 1)
-//      }
-// }
 
 // Run evolution function
 // populate population

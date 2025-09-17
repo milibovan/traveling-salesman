@@ -1,10 +1,9 @@
 use std::collections::HashSet;
 use std::fmt::Debug;
-use crate::Route;
 use crate::tour::{get_random_cities, read_cities_and_routes, Tour};
 
 pub struct Population {
-    tours: HashSet<Tour>,
+    pub(crate) tours: HashSet<Tour>,
     fitness: f32,
 }
 
