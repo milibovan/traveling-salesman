@@ -1,16 +1,15 @@
-use std::collections::HashSet;
 use std::fmt::Debug;
 use crate::tour::{get_random_cities, read_cities_and_routes, Tour};
 
 pub struct Population {
-    pub(crate) tours: HashSet<Tour>,
+    pub(crate) tours: Vec<Tour>,
     fitness: f32,
 }
 
 impl Population {
     pub fn new() -> Self {
         Population {
-            tours: HashSet::new(),
+            tours: Vec::new(),
             fitness: 0.0,
         }
     }
@@ -24,24 +23,15 @@ impl Population {
     pub fn init_tours(&mut self) {
         let (selected_cities) = self.init_cities();
         for _ in 0..10 {
-            self.tours.insert(Tour::init_tour(selected_cities.clone()));
+            self.tours.push(Tour::init_tour(selected_cities.clone()));
         }
         self.get_fitness();
     }
 
-    pub fn get_fittest(&mut self) -> f32 {
-        let mut fitesst = 0.0;
-        if let Some(best_tour) = self.tours.iter().min_by_key(|tour| tour.total_distance) {
-            fitesst = best_tour.total_distance as f32;
-        } else {
-            fitesst = 0.0;
-        }
-        fitesst
-    }
-
-    pub fn get_fitness(&mut self) {
+    pub fn get_fitness(&mut self) -> f32 {
         for tour in self.tours.iter() {
             self.fitness += tour.total_distance as f32;
         }
+        self.fitness
     }
 }

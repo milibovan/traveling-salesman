@@ -48,73 +48,10 @@ impl Tour {
             total_distance += f32::INFINITY;
         }
 
-        // println!("{} -> {}", source, destination);
-
-        // while all cities aren't visited
-        /*while visited_cities.len() != selected_cities.len() {
-        visited_cities.insert(starting_city.clone());
-            if let Some((_, mut route)) = selected_routes
-                .iter()
-                .enumerate()
-                .filter(|(_, r)|
-                    (r.source == *starting_city || r.destination == *starting_city)
-                        && (!visited_cities.contains(&r.source) || !visited_cities.contains(&r.destination)))
-                .min_by_key(|(_, r)| r.distance)
-            {
-                let oriented_route = Self::orient_route(&mut starting_city, &mut route);
-
-                selected_tour_routes.push(oriented_route.clone());
-
-                // selected_tour_routes.push(route.clone());
-                // println!("{:?}", route);
-                // println!("{:?}",starting_city);
-                // println!("{:?}", visited_cities);
-                if route.source != *starting_city && !visited_cities.contains(&route.source) {
-                    starting_city = &route.source;
-                } else if route.destination != *starting_city && !visited_cities.contains(&route.destination) {
-                    starting_city = &route.destination;
-                } else {
-                    break;
-                }
-            }
-        }
-
-        visited_cities.insert(starting_city.clone());
-
-        // to return to base city
-        if let Some((_, mut route)) = selected_routes
-            .iter()
-            .enumerate()
-            .filter(|(_, r)| (r.source == *starting_city || r.destination == *starting_city)  &&  (r.source == selected_cities[index] || r.destination == selected_cities[index]))
-            .min_by_key(|(_, r)| r.distance)
-        {
-            let oriented_route = Self::orient_route(&mut starting_city, &mut route);
-
-            selected_tour_routes.push(oriented_route.clone());
-        }*/
-
         Tour {
             cities: visited_cities,
             total_distance: total_distance as i32
         }
-    }
-
-    fn orient_route(starting_city: &mut &String, route: &mut &Route) -> Route {
-        let oriented_route = if route.source.eq(*starting_city) {
-            Route {
-                source: route.source.clone(),
-                destination: route.destination.clone(),
-                distance: route.distance,
-            }
-        } else {
-            // flip the route so that starting_city is always the source
-            Route {
-                source: route.destination.clone(),
-                destination: route.source.clone(),
-                distance: route.distance,
-            }
-        };
-        oriented_route
     }
 }
 
@@ -151,4 +88,32 @@ pub fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
         });
     }
     (cities, routes)
+}
+
+pub fn calculate_total_distance(tour: &mut Tour) {
+    let (_, routes) = read_cities_and_routes();
+
+    let mut total_distance:f32 = 0f32;
+
+    for i in 0..tour.cities.len() {
+        let source = &tour.cities[i];
+        let destination = &tour.cities[i+1];
+
+        if let Some(route) = routes.iter().find(|r| (r.source == *source && r.destination == *destination) || (r.source == *destination && r.destination == *source)) {
+            total_distance += route.distance as f32;
+        } else {
+            total_distance += f32::INFINITY;
+        }
+    }
+
+    let source = &tour.cities[tour.cities.len()-1];
+    let destination = &tour.cities[0];
+
+    if let Some(route) = routes.iter().find(|r| (r.source == *source && r.destination == *destination) || (r.source == *destination && r.destination == *source)) {
+        total_distance += route.distance as f32;
+    } else {
+        total_distance += f32::INFINITY;
+    }
+
+    tour.total_distance = total_distance as i32;
 }

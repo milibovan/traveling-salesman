@@ -1,9 +1,13 @@
 use rand::{rng, Rng};
-use crate::NO_CITIES;
+use crate::{NO_CITIES};
 use crate::population::Population;
-use crate::tour::{Tour};
+use crate::tour::{calculate_total_distance, Tour};
+const MUTATION_POSSIBILITY: f32 = 0.2;
+
+const POPULATION_SIZE: i32 = 20;
+
 // Selection function to select solutions for next generation
-fn selection(population: Population) -> Vec<Tour> {
+fn selection(population: &mut Population) -> Vec<Tour> {
     let mut best_tours: Vec<Tour> = Vec::new();
 
     if let Some(best_tour) = population.tours.iter().min_by_key(|tour| tour.total_distance) {
@@ -16,15 +20,6 @@ fn selection(population: Population) -> Vec<Tour> {
 
     best_tours
 }
-//     Fitness_function = Callable([Genome], int)
-//     fn select_pair(population: Population, fitness_function: Fitness_function) -> Population {
-//         return choices ( population=population,
-//         we want those with higher weight to be more likely to be selected for next generation
-//         weights=[fitness_function(genome) for genome in population],
-//         k=2)
-//     }
-
-const MUTATION_POSSIBILITY: f32 = 0.2;
 
 // Crossover function to cut genomes and mix them
 fn crossover(parent1: &Tour, parent2: &Tour) -> Tour {
@@ -68,17 +63,30 @@ fn mutation(tour: &mut Tour){
     }
 }
 
-// Run evolution function
-// populate population
-// loop in generation_limit
-// if fitness function exceeds fitness limit break
-// get next generation best 2 out of current population
-// now iterate over half of current generation
-// we get parents with selection function (population, fitness_fn)
-// we get 2 genomes with crossover_function (parent[0], parent[1])
-// mutate first
-// mutate second
-// add to next_generation
-// population = next_generation
+// Evolution, main loop of ga
+fn evolution(population: &mut Population) -> Population {
+    let mut new_population = Population::new();
 
-// return population (tour), and number of populations
+    // selection
+    let best_tours = selection(population);
+
+    new_population.tours.push(best_tours[0].clone());
+    new_population.tours.push(best_tours[1].clone());
+
+    loop {
+        if new_population.tours.len() == POPULATION_SIZE as usize {
+            break;
+        }
+        let mut child = crossover(&best_tours[0], &best_tours[1]);
+
+        mutation(&mut child);
+
+        new_population.tours.push(child);
+    }
+
+    for tour in new_population.tours.iter_mut() {
+        calculate_total_distance(tour);
+    }
+
+    new_population
+}
