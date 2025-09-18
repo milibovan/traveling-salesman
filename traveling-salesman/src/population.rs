@@ -1,9 +1,11 @@
-use std::fmt::Debug;
-use crate::tour::{get_random_cities, read_cities_and_routes, Tour};
+use std::collections::HashSet;
+use crate::genetic_algorithm::POPULATION_SIZE;
+use crate::Route;
+use crate::tour::{Tour};
 
 pub struct Population {
     pub(crate) tours: Vec<Tour>,
-    fitness: f32,
+    pub(crate) fitness: f32,
 }
 
 impl Population {
@@ -14,24 +16,12 @@ impl Population {
         }
     }
 
-    pub fn init_cities(&mut self) -> Vec<String> {
-        let (cities, _) = read_cities_and_routes();
-        let selected_cities: Vec<String> = get_random_cities(cities).iter().cloned().collect();
-        selected_cities
-    }
-
-    pub fn init_tours(&mut self) {
-        let (selected_cities) = self.init_cities();
-        for _ in 0..10 {
-            self.tours.push(Tour::init_tour(selected_cities.clone()));
+    pub fn init_tours(&mut self, all_cities: Vec<String>, routes: &HashSet<Route>) {
+        for _ in 0..POPULATION_SIZE {
+            self.tours.push(Tour::init_tour(all_cities.clone(), routes));
         }
-        self.get_fitness();
-    }
-
-    pub fn get_fitness(&mut self) -> f32 {
         for tour in self.tours.iter() {
             self.fitness += tour.total_distance as f32;
         }
-        self.fitness
     }
 }
