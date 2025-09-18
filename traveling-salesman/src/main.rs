@@ -7,7 +7,7 @@ mod genetic_algorithm;
 mod population;
 mod tour;
 
-pub const NO_CITIES: i32 = 4;
+pub const NO_CITIES: i32 = 10;
 const MAX_GENERATIONS: i32 = 100;
 
 #[derive(Debug, Eq, Hash, PartialEq)]
@@ -22,7 +22,11 @@ fn main() {
     let (all_cities, routes) = read_cities_and_routes();
     let mut population = Population::new();
 
-    let cities: Vec<String> = all_cities.iter().cloned().collect();
+    let cities: Vec<String> = all_cities
+        .iter()
+        .take(NO_CITIES as usize)
+        .cloned()
+        .collect();
 
     population.init_tours(cities.clone(), &routes);
 
@@ -57,12 +61,13 @@ fn main() {
     if let Some(tour) = best_solution {
         println!("Best tour found after {} generations:", MAX_GENERATIONS);
         println!("Distance: {}", tour.total_distance);
+        println!("{:?}", tour);
     } else {
         println!("No solution found.");
     }
 }
 
-pub fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
+fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
     let input = fs::read_to_string("input.txt").expect("Something went wrong while reading the file");
     let split = input.split("\n").collect::<Vec<&str>>();
     let mut cities = HashSet::new();

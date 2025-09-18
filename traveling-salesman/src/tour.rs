@@ -17,7 +17,7 @@ impl Tour {
 
         let mut tour = Tour {
             cities: visited_cities,
-            total_distance: 0, // Initialize to 0, it will be calculated next
+            total_distance: 0,
         };
 
         tour.calculate_tour_distance(routes);

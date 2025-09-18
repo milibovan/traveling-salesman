@@ -76,7 +76,6 @@ pub fn evolution(population: &mut Population, routes: &HashSet<Route>) -> Popula
         new_population.tours.push(child);
     }
 
-    // Now call the new, correct distance calculation function
     for tour in new_population.tours.iter_mut() {
         tour.calculate_tour_distance(routes);
     }
