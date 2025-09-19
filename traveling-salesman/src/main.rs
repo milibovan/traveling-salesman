@@ -5,6 +5,7 @@ use crate::genetic_algorithm::evolution;
 use crate::population::Population;
 use std::time::Instant;
 use crate::tour::Tour;
+use std::sync::mpsc::{channel, Sender, Receiver};
 
 mod genetic_algorithm;
 mod population;
@@ -12,7 +13,8 @@ mod tour;
 
 pub const NO_CITIES: i32 = 10;
 const MAX_GENERATIONS: i32 = 100;
-const MIGRATION_RATE: i32 = 5;
+const MIGRATION_RATE: i32 = 10;
+const MIGRANTS: i32 = 2;
 
 #[derive(Debug, Eq, Hash, PartialEq)]
 #[derive(Clone)]
@@ -42,7 +44,6 @@ fn main() {
         .cloned();
 
     for _ in 0..MAX_GENERATIONS {
-        // evolution must also accept the `routes` data
         let new_population = evolution(&mut population, &routes);
 
         if let Some(solution) = new_population
@@ -67,6 +68,8 @@ fn main() {
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
+
+    parallel_ga(all_cities, routes);
 }
 
 fn print_best_solution(best_solution: &mut Option<Tour>) {
@@ -97,12 +100,22 @@ fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
     (cities, routes)
 }
 
-fn parallel_ga() {
+fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
     let now = Instant::now();
     let args: Vec<String> = env::args().collect();
-    let no_threads: i32 = args[1].parse().unwrap();
+    let mut no_threads:i32 = 14;
+    if args.len() > 1 {
+        no_threads= args[1].parse().unwrap();
+    }
 
-    let (all_cities, routes) = read_cities_and_routes();
+    let mut senders = Vec::<Sender<Vec<Tour>>>::new();
+    let mut receivers = Vec::<Receiver<Vec<Tour>>>::new();
+
+    for _ in 0..no_threads {
+        let (tx, rx) = channel();
+        senders.push(tx);
+        receivers.push(rx);
+    }
 
     let cities: Vec<String> = all_cities
         .iter()
@@ -110,52 +123,75 @@ fn parallel_ga() {
         .cloned()
         .collect();
 
-    // let mut handles = vec![];
+    let arc_routes = Arc::new(routes);
+    let arc_cities = Arc::new(cities);
 
-    for _ in 0..no_threads {
-        let mut population = Population::new();
+    let mut handles = vec![];
 
-        population.init_tours(cities.clone(), &routes);}
-    //
-    //     let handle = thread::spawn(|| {
-    //
-    //         let mut best_solution = population
-    //             .tours
-    //             .iter()
-    //             .min_by_key(|tour| tour.total_distance)
-    //             .cloned();
-    //
-    //         for _ in 0..MAX_GENERATIONS {
-    //             let new_population = evolution(&mut population, &routes);
-    //
-    //             if let Some(solution) = new_population
-    //                 .tours
-    //                 .iter()
-    //                 .min_by_key(|tour| tour.total_distance)
-    //                 .cloned()
-    //             {
-    //                 if let Some(current_best) = &best_solution {
-    //                     if solution.total_distance < current_best.total_distance {
-    //                         best_solution = Some(solution);
-    //                     }
-    //                 } else {
-    //                     best_solution = Some(solution);
-    //                 }
-    //             }
-    //
-    //             population = new_population;
-    //         }
-    //
-    //         print_best_solution(&mut best_solution);
-    //         return best_solution.unwrap();
-    //     });
-    //
-    //     handles.push(handle);
-    // }
-    //
-    // for handle in handles {
-    //     handle.join().unwrap();
-    // }
+    for id in 0..no_threads {
+        let routes = Arc::clone(&arc_routes);
+        let cities = Arc::clone(&arc_cities);
+
+        let all_senders = senders.clone();
+        let receiver = receivers.remove(0);
+
+        let handle = thread::spawn(move || {
+            let mut population = Population::new();
+            population.init_tours((*cities).clone(), &routes);
+
+            let mut best_solution = population
+                .tours
+                .iter()
+                .min_by_key(|tour| tour.total_distance)
+                .cloned();
+
+            for generation in 0..MAX_GENERATIONS {
+                let new_population = evolution(&mut population, &routes);
+
+                if let Some(solution) = new_population
+                    .tours
+                    .iter()
+                    .min_by_key(|tour| tour.total_distance)
+                    .cloned()
+                {
+                    if let Some(current_best) = &best_solution {
+                        if solution.total_distance < current_best.total_distance {
+                            best_solution = Some(solution);
+                        }
+                    } else {
+                        best_solution = Some(solution);
+                    }
+                }
+                population = new_population;
+
+                if generation % MIGRATION_RATE == 0 && generation > 0 {
+                    let migrants: Vec<Tour> = population.tours.iter().cloned().take(MIGRANTS as usize).collect();
+
+                    for (i, sender) in all_senders.iter().enumerate() {
+                        if i != id as usize{
+                            let _ = sender.send(migrants.clone());
+                        }
+                    }
+                }
+
+                while let Ok(incoming) = receiver.try_recv() {
+                    for migrant in incoming {
+                        population.tours.push(migrant);
+                    }
+                }
+            }
+
+
+            print_best_solution(&mut best_solution);
+            best_solution.unwrap()
+        });
+
+        handles.push(handle);
+    }
+
+    let results: Vec<Tour> = handles.into_iter().map(|h| h.join().unwrap()).collect();
+
+    println!("{:?}", results.iter().min_by_key(|tour| {tour.total_distance}));
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
