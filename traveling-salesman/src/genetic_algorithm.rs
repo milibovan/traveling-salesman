@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 use rand::{rng, Rng};
-use crate::{Route, NO_CITIES};
+use crate::{Route, GLOBALS};
 use crate::population::Population;
 use crate::tour::{Tour};
-const MUTATION_POSSIBILITY: f32 = 0.2;
-pub const POPULATION_SIZE: i32 = 20;
 
 // Selection function to select solutions for next generation
 // TODO better selection for case of local optimum
@@ -26,7 +24,7 @@ fn selection(population: &Population) -> Vec<Tour> {
 fn crossover(parent1: &Tour, parent2: &Tour, routes: &HashSet<Route>) -> Tour {
     let mut cities: Vec<String> = Vec::new();
 
-    let pivot: usize = rng().random_range(0..NO_CITIES) as usize;
+    let pivot: usize = rng().random_range(0..GLOBALS.no_cities) as usize;
 
     for i in 0..pivot {
         cities.push(parent1.cities[i].clone());
@@ -44,9 +42,9 @@ fn crossover(parent1: &Tour, parent2: &Tour, routes: &HashSet<Route>) -> Tour {
 
 // Mutation with certain possibility mutate bits in solution
 fn mutation(tour: &mut Tour){
-    for index1 in 0..NO_CITIES {
-        if rng().random_range(0.0..1.0) <= MUTATION_POSSIBILITY {
-            let index2 = rng().random_range(0..NO_CITIES) as usize;
+    for index1 in 0..GLOBALS.no_cities {
+        if rng().random_range(0.0..1.0) <= GLOBALS.mutation_possibility {
+            let index2 = rng().random_range(0..GLOBALS.no_cities) as usize;
 
             let city1 = tour.cities[index1 as usize].clone();
             let city2 = tour.cities[index2].clone();
@@ -68,7 +66,7 @@ pub fn evolution(population: &mut Population, routes: &HashSet<Route>) -> Popula
     new_population.tours.push(best_tours[1].clone());
 
     loop {
-        if new_population.tours.len() == POPULATION_SIZE as usize {
+        if new_population.tours.len() == GLOBALS.population_size as usize {
             break;
         }
         let mut child = crossover(&best_tours[0], &best_tours[1], &routes);

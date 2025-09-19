@@ -1,20 +1,41 @@
 use std::collections::HashSet;
-use std::{env, fs, thread};
+use std::{fs, thread};
 use std::sync::Arc;
 use crate::genetic_algorithm::evolution;
 use crate::population::Population;
 use std::time::Instant;
 use crate::tour::Tour;
 use std::sync::mpsc::{channel, Sender, Receiver};
+use clap::Parser;
+use lazy_static::lazy_static;
 
 mod genetic_algorithm;
 mod population;
 mod tour;
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, default_value_t = 14)]
+    no_threads: i32,
 
-pub const NO_CITIES: i32 = 10;
-const MAX_GENERATIONS: i32 = 100;
-const MIGRATION_RATE: i32 = 10;
-const MIGRANTS: i32 = 2;
+    #[arg(short, long, default_value_t = 10)]
+    no_cities: i32,
+
+    #[arg(short, long, default_value_t = 100)]
+    max_generations: i32,
+
+    #[arg(short, long, default_value_t = 10)]
+    migration_rate: i32,
+
+    #[arg(short, long, default_value_t = 2)]
+    migrants: i32,
+
+    #[arg(short, long, default_value_t = 0.2)]
+    mutation_possibility: f32,
+
+    #[arg(short, long, default_value_t = 20)]
+    population_size: i32,
+}
 
 #[derive(Debug, Eq, Hash, PartialEq)]
 #[derive(Clone)]
@@ -24,14 +45,40 @@ struct Route {
     distance: i32
 }
 
+struct MyConstants {
+    no_threads: i32,
+    no_cities: i32,
+    max_generations: i32,
+    migration_rate: i32,
+    migrants: i32,
+    mutation_possibility: f32,
+    population_size: i32
+}
+
+lazy_static! {
+    static ref GLOBALS: MyConstants = {
+        let args = Args::parse();
+        MyConstants {
+            no_threads: args.no_threads,
+            no_cities: args.no_cities,
+            max_generations: args.max_generations,
+            migration_rate: args.migration_rate,
+            migrants: args.migrants,
+            mutation_possibility: args.mutation_possibility,
+            population_size: args.population_size
+        }
+    };
+}
+
 fn main() {
     let now = Instant::now();
+
     let (all_cities, routes) = read_cities_and_routes();
     let mut population = Population::new();
 
     let cities: Vec<String> = all_cities
         .iter()
-        .take(NO_CITIES as usize)
+        .take(GLOBALS.no_cities as usize)
         .cloned()
         .collect();
 
@@ -43,7 +90,7 @@ fn main() {
         .min_by_key(|tour| tour.total_distance)
         .cloned();
 
-    for _ in 0..MAX_GENERATIONS {
+    for _ in 0..GLOBALS.max_generations {
         let new_population = evolution(&mut population, &routes);
 
         if let Some(solution) = new_population
@@ -74,7 +121,7 @@ fn main() {
 
 fn print_best_solution(best_solution: &mut Option<Tour>) {
     if let Some(tour) = best_solution {
-        println!("Best tour found after {} generations:", MAX_GENERATIONS);
+        println!("Best tour found after {} generations:", GLOBALS.max_generations);
         println!("Distance: {}", tour.total_distance);
         println!("{:?}", tour);
     } else {
@@ -102,16 +149,11 @@ fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
 
 fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
     let now = Instant::now();
-    let args: Vec<String> = env::args().collect();
-    let mut no_threads:i32 = 14;
-    if args.len() > 1 {
-        no_threads= args[1].parse().unwrap();
-    }
 
     let mut senders = Vec::<Sender<Vec<Tour>>>::new();
     let mut receivers = Vec::<Receiver<Vec<Tour>>>::new();
 
-    for _ in 0..no_threads {
+    for _ in 0..GLOBALS.no_threads {
         let (tx, rx) = channel();
         senders.push(tx);
         receivers.push(rx);
@@ -119,7 +161,7 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
 
     let cities: Vec<String> = all_cities
         .iter()
-        .take(NO_CITIES as usize)
+        .take(GLOBALS.no_cities as usize)
         .cloned()
         .collect();
 
@@ -128,7 +170,7 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
 
     let mut handles = vec![];
 
-    for id in 0..no_threads {
+    for id in 0..GLOBALS.no_threads {
         let routes = Arc::clone(&arc_routes);
         let cities = Arc::clone(&arc_cities);
 
@@ -145,7 +187,7 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
                 .min_by_key(|tour| tour.total_distance)
                 .cloned();
 
-            for generation in 0..MAX_GENERATIONS {
+            for generation in 0..GLOBALS.max_generations {
                 let new_population = evolution(&mut population, &routes);
 
                 if let Some(solution) = new_population
@@ -164,8 +206,8 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
                 }
                 population = new_population;
 
-                if generation % MIGRATION_RATE == 0 && generation > 0 {
-                    let migrants: Vec<Tour> = population.tours.iter().cloned().take(MIGRANTS as usize).collect();
+                if generation % GLOBALS.migration_rate == 0 && generation > 0 {
+                    let migrants: Vec<Tour> = population.tours.iter().cloned().take(GLOBALS.migrants as usize).collect();
 
                     for (i, sender) in all_senders.iter().enumerate() {
                         if i != id as usize{

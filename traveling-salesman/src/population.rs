@@ -1,6 +1,5 @@
 use std::collections::HashSet;
-use crate::genetic_algorithm::POPULATION_SIZE;
-use crate::Route;
+use crate::{Route, GLOBALS};
 use crate::tour::{Tour};
 
 pub struct Population {
@@ -17,7 +16,7 @@ impl Population {
     }
 
     pub fn init_tours(&mut self, all_cities: Vec<String>, routes: &HashSet<Route>) {
-        for _ in 0..POPULATION_SIZE {
+        for _ in 0..GLOBALS.population_size {
             self.tours.push(Tour::init_tour(all_cities.clone(), routes));
         }
         for tour in self.tours.iter() {
