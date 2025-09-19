@@ -130,7 +130,7 @@ fn print_best_solution(best_solution: &mut Option<Tour>) {
 }
 
 fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
-    let input = fs::read_to_string("input.txt").expect("Something went wrong while reading the file");
+    let input = fs::read_to_string("../utils/input.txt").expect("Something went wrong while reading the file");
     let split = input.split("\n").collect::<Vec<&str>>();
     let mut cities = HashSet::new();
     let mut routes = <HashSet<Route>>::new();
