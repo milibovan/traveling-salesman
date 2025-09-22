@@ -46,13 +46,7 @@ fn mutation(tour: &mut Tour){
         if rng().random_range(0.0..1.0) <= GLOBALS.mutation_possibility {
             let index2 = rng().random_range(0..GLOBALS.no_cities) as usize;
 
-            let city1 = tour.cities[index1 as usize].clone();
-            let city2 = tour.cities[index2].clone();
-
-            if !city1.eq(&city2) {
-                tour.cities[index1 as usize] = city2;
-                tour.cities[index2] = city1;
-            }
+            tour.cities.swap(index1 as usize, index2);
         }
     }
 }
