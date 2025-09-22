@@ -98,6 +98,18 @@ Each island evolves its population independently.
 After every migration_rate generations, a fixed number of the best individuals (migrants) are cloned and sent to all other islands to improve their genetic diversity. This helps prevent premature convergence and find better solutions.
 
 ## 📊 Example Results
+| Population; Generations | 10 cities | 15 cities | 20 cities |
+| :--- | :--- | :--- | :--- |
+| 10; 100 | 17ms; 6770 / 33ms; 6590 | 16.5ms; 11150 / 40.5ms; 10153 | 27.5ms; 13073 / 58ms; 11535 |
+| 20; 100 | 68.5ms; 4002 / 33ms; 3842 | 38s; 10218 / 94.5ms; 9268 | 59ms; 10350 / 139.5ms; 11650 |
+| 30; 100 | 36ms; 6508 / 80.5ms; 6078 | 56ms; 7905 / 148.5ms; 7385 | 169.5ms; 12663 / 226.5ms; 11680 |
+| 10; 200 | 61.44ms; 6320 / 120.88ms; 6100 | 108ms; 9650 / 161ms; 9170 | 139.5ms; 12453 / 214ms; 12250 |
+| 20; 200 | 142.89ms; 4538 / 194.90ms; 4298 | 74.63ms; 8623 / 189.63ms; 7580 | 88.94ms; 12333 / 224.37ms; 11175 |
+| 30; 200 | 120.54ms; 6300 / 287.54ms; 5740 | 121.95ms; 9420 / 277.34ms; 9103 | 161.17ms; 12658 / 398.29ms; 11218 |
+| 10; 500 | 66.32ms; 4498 / 160.55ms; 4498 | 131.47ms; 9353 / 369.62ms; 8808 | 162.06ms; 12390 / 440.97ms; 11840 |
+| 20; 500 | 124.70ms; 5908 / 409.78ms; 5800 | 208.75ms; 9403 / 752.29ms; 8418 | 271.97ms; 11803 / 979.17ms; 11200 |
+| 30; 500 | 260.52ms; 6005 / 624.14ms; 5455 | 366.70ms; 10185 / 1.22s; 8990 | 419.51ms; 12168 / 1.67s; 11508 |
+
 
 
 (results will vary depending on random seeds)
