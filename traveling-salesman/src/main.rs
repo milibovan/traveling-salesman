@@ -16,25 +16,25 @@ mod tour;
 #[command(author, version, about, long_about = None)]
 struct Args {
     #[arg(short, long, default_value_t = 14)]
-    no_threads: i32,
+    threads: i32,
 
     #[arg(short, long, default_value_t = 10)]
-    no_cities: i32,
+    cities: i32,
 
     #[arg(short, long, default_value_t = 100)]
-    max_generations: i32,
+    generations: i32,
 
     #[arg(short, long, default_value_t = 10)]
     migration_rate: i32,
 
     #[arg(short, long, default_value_t = 2)]
-    migrants: i32,
+    no_migrants: i32,
 
     #[arg(short, long, default_value_t = 0.2)]
-    mutation_possibility: f32,
+    expected_mutation_possibility: f32,
 
     #[arg(short, long, default_value_t = 20)]
-    population_size: i32,
+    population: i32,
 }
 
 #[derive(Debug, Eq, Hash, PartialEq)]
@@ -59,13 +59,13 @@ lazy_static! {
     static ref GLOBALS: MyConstants = {
         let args = Args::parse();
         MyConstants {
-            no_threads: args.no_threads,
-            no_cities: args.no_cities,
-            max_generations: args.max_generations,
+            no_threads: args.threads,
+            no_cities: args.cities,
+            max_generations: args.generations,
             migration_rate: args.migration_rate,
-            migrants: args.migrants,
-            mutation_possibility: args.mutation_possibility,
-            population_size: args.population_size
+            migrants: args.no_migrants,
+            mutation_possibility: args.expected_mutation_possibility,
+            population_size: args.population
         }
     };
 }
@@ -130,7 +130,7 @@ fn print_best_solution(best_solution: &mut Option<Tour>) {
 }
 
 fn read_cities_and_routes() -> (HashSet<String>, HashSet<Route>) {
-    let input = fs::read_to_string("../utils/input.txt").expect("Something went wrong while reading the file");
+    let input = fs::read_to_string("utils/input.txt").expect("Something went wrong while reading the file");
     let split = input.split("\n").collect::<Vec<&str>>();
     let mut cities = HashSet::new();
     let mut routes = <HashSet<Route>>::new();
