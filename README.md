@@ -35,7 +35,9 @@ Make sure you have Rust
  installed.
 
 `git clone https://github.com/milibovan/traveling-salesman.git`
+
 `cd traveling-salesman`
+
 `cargo build --release`
 
 ### ▶️ Usage
@@ -46,15 +48,22 @@ Run the program with:
 
 ### Arguments
 Option	Description	Default
--t, --no-threads <INT>	Number of islands (threads)	14
--c, --no-cities <INT>	Number of cities in the problem	10
--g, --max-generations <INT>	Maximum number of generations	100
--r, --migration-rate <INT>	Interval (in generations) between migrations	10
--m, --migrants <INT>	Number of individuals migrating	2
--u, --mutation-possibility <FLOAT>	Probability of mutation per individual	0.2
--p, --population-size <INT>	Population size per island	20
+-t, --threads <INT>	Number of islands (threads)	14
+
+-c, --cities <INT>	Number of cities in the problem	10
+
+-g, --generations <INT>	Maximum number of generations	100
+
+-m, --migration <INT>	Interval (in generations) between migrations	10
+
+-n, --no_migrants <INT>	Number of individuals migrating	2
+
+-e, --expected-mutation-possibility <FLOAT>	Probability of mutation per individual	0.2
+
+-p, --population <INT>	Population size per island	20
+
 ### Example
-`cargo run --release -- -t 8 -c 30 -g 500 -r 20 -m 4 -u 0.15 -p 100`
+`cargo run --release -- -t 8 -c 30 -g 500 -m 20 -n 4 -e 0.15 -p 100`
 
 
 This runs with:
