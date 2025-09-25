@@ -1,0 +1,42 @@
+/* --- Global Variables and Color Scheme --- */
+:root {
+  /* NEW: Use a modern, dark theme for better contrast */
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  /* Light text on dark background */
+  color: #E8E8E8; 
+  /* Deep, neutral background color */
+  background-color: #1A202C; 
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Links (Anchor Tags) --- */
+a {
+  font-weight: 500;
+  /* Teal/Cyan accent color for visibility */
+  color: #00C4CC; 
+  text-decoration: inherit;
+}
+a:hover {
+  /* Slightly darker on hover */
+  color: #0096A0;
+}
+
+/* --- Body and Root Centering --- */
+body {
+  margin: 0;
+  /* Centering the entire content block */
+  display: flex; 
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  /* Inherit the new background color */
+  background-color: #1A202C;
+}

@@ -1,0 +1,96 @@
+
+#root {
+  /* Ensures the root container is centered horizontally */
+  max-width: 6280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center; 
+  width: 100%; /* Important for centering map inside */
+}
+
+
+/* --- Headings and Typography --- */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: #00C4CC; /* Use the accent color for the main title */
+}
+
+/* --- Buttons --- */
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  /* Darker background for the button */
+  background-color: #2D3748; 
+  color: #E8E8E8;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.25s;
+}
+button:hover {
+  /* Hover effect with the accent color */
+  border-color: #00C4CC;
+  background-color: #384256; 
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto #00C4CC;
+}
+
+/* --- Other Components --- */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #00C4CCaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #00C4CCaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+  background-color: #2D3748; /* Give cards a slightly lighter background */
+  border-radius: 8px;
+  margin: 2em 0;
+}
+
+.read-the-docs {
+  color: #A0AEC0;
+}
+
+/* --- Light Mode Overrides (if needed) --- */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #2D3748;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #0096A0;
+  }
+  button {
+    background-color: #F7FAFC;
+    color: #2D3748;
+  }
+}
