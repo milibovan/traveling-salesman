@@ -94,3 +94,7 @@ button:focus-visible {
     color: #2D3748;
   }
 }
+
+.results.active div {
+  color: black;
+}
