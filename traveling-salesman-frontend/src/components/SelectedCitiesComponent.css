@@ -1,0 +1,35 @@
+/* Container for the marker list */
+.marker-list-sidebar {
+    width: 30%; 
+    min-width: 200px; 
+    max-height: 60vh; 
+    overflow-y: auto; 
+    border: 1px solid #ccc; 
+    padding: 15px;
+    box-sizing: border-box; /* Ensures padding/border is included in the width */
+}
+
+/* Style for the ordered list */
+.marker-list-ordered {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+/* Style for individual list items */
+.marker-list-item {
+    margin-bottom: 8px; 
+    border-bottom: 1px dotted #eee; 
+    padding-bottom: 5px; 
+}
+
+/* Style for coordinates text */
+.marker-list-coords {
+    font-size: 1.0em; /* No change from original, but good to have control */
+    color: rgb(16, 160, 204);
+}
+
+/* Style for the empty state message */
+.marker-list-empty-text {
+    color: #666;
+    font-style: italic;
+}

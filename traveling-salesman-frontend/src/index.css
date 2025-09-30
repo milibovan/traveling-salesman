@@ -1,7 +1,6 @@
 /* --- Global Variables and Color Scheme --- */
 :root {
-  /* NEW: Use a modern, dark theme for better contrast */
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; */
   line-height: 1.5;
   font-weight: 400;
 

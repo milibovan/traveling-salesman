@@ -1,0 +1,6 @@
+/* Use a class selector, as you used className="map-container" */
+.map-container {
+    display: flex; 
+    gap: 20px;
+    padding: 20px;
+}

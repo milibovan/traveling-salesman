@@ -16,6 +16,11 @@ h1 {
   color: #00C4CC; /* Use the accent color for the main title */
 }
 
+h2 {
+  font-size: 1.8em;
+  line-height: 1.1;
+  color: #01c7ce; /* Use the accent color for the main title */
+}
 /* --- Buttons --- */
 button {
   border-radius: 8px;
@@ -25,15 +30,16 @@ button {
   font-weight: 500;
   font-family: inherit;
   /* Darker background for the button */
-  background-color: #2D3748; 
-  color: #E8E8E8;
+  background-color: #00abb1; 
+  color: #fff;
   cursor: pointer;
   transition: border-color 0.25s, background-color 0.25s;
 }
 button:hover {
   /* Hover effect with the accent color */
   border-color: #00C4CC;
-  background-color: #384256; 
+  background-color: #017577; 
+  color: #ffffff;
 }
 button:focus,
 button:focus-visible {
@@ -96,5 +102,16 @@ button:focus-visible {
 }
 
 .results.active div {
-  color: black;
+  background-color: white;
+  color: #00C4CC;
+}
+
+input.glass {
+  background-color: white;
+  color: #0096A0;
+}
+
+a.leaflet-bar-part.leafle-bar-par-single {
+  background-color: white;
+  color: #00C4CC;
 }

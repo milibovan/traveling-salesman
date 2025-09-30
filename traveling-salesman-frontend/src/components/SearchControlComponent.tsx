@@ -5,8 +5,13 @@ import './SearchContorlComponent.css'
 
 type LatLngTuple = L.LatLngTuple;
 
+type MarkerData = {
+  position: LatLngTuple;
+  label: string;
+};
+
 const SearchControlComponent: React.FC<{
-  setMarkers: React.Dispatch<React.SetStateAction<LatLngTuple[]>>;
+  setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
 }> = ({ setMarkers }) => {
   const map = useMap();
   const searchControlRef = React.useRef<L.Control | null>(null);
@@ -34,9 +39,12 @@ const SearchControlComponent: React.FC<{
     // --- 2. Event Listener Setup ---
     const eventHandler = (result: any) => {
       const { x, y, label } = result.location;
-      const newMarkerPosition: LatLngTuple = [y, x];
-      setMarkers((prevMarkers) => [...prevMarkers, newMarkerPosition]);
-      console.log(`New Marker Added (Search): ${label}`, newMarkerPosition);
+      const newMarker: MarkerData = {
+                position: [y, x],
+                label: label || `Marker ${Date.now()}`
+            };
+      setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+      // console.log(`New Marker Added (Search): ${label}`, newMarker);
     };
 
     map.on("geosearch/showlocation", eventHandler);
