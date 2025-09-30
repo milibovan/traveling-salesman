@@ -12,6 +12,8 @@ use lazy_static::lazy_static;
 mod genetic_algorithm;
 mod population;
 mod tour;
+mod server;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -70,11 +72,26 @@ lazy_static! {
     };
 }
 
-fn main() {
-    let (all_cities, routes) = sequential_ga();
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 
-    parallel_ga(all_cities, routes);
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().route("/", web::post().to(server_implementation)))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
+
+async fn server_implementation() -> impl Responder {
+    let message = format!("Successfull!");
+    HttpResponse::Ok().body(message)
+}
+
+// fn main() {
+//     let (all_cities, routes) = sequential_ga();
+//
+//     parallel_ga(all_cities, routes);
+// }
 
 fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
     let now = Instant::now();
