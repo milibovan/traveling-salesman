@@ -72,26 +72,19 @@ lazy_static! {
     };
 }
 
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+fn main() -> std::io::Result<()>{
+    let server_handle = std::thread::spawn(|| {
+        actix_web::rt::System::new().block_on(crate::server::start_server())
+    });
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().route("/", web::post().to(server_implementation)))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    let (all_cities, routes) = sequential_ga();
+
+    parallel_ga(all_cities, routes);
+
+    server_handle.join().unwrap()?;
+
+    Ok(())
 }
-
-async fn server_implementation() -> impl Responder {
-    let message = format!("Successfull!");
-    HttpResponse::Ok().body(message)
-}
-
-// fn main() {
-//     let (all_cities, routes) = sequential_ga();
-//
-//     parallel_ga(all_cities, routes);
-// }
 
 fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
     let now = Instant::now();

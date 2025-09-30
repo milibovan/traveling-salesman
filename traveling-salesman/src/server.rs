@@ -1,14 +1,17 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().route("/", web::get().to(server_implementation)))
+async fn server_implementation() -> impl Responder {
+    // You could integrate your GA logic here or access its results
+    let message = format!("Successfull!");
+    HttpResponse::Ok().body(message)
+}
+
+pub async fn start_server() -> std::io::Result<()> {
+    println!("Starting server at http://127.0.0.1:8080");
+    HttpServer::new(|| {
+        App::new().route("/", web::get().to(server_implementation))
+    })
         .bind(("127.0.0.1", 8080))?
         .run()
         .await
-}
-
-async fn server_implementation() -> impl Responder {
-    let message = format!("Successfull!");
-    HttpResponse::Ok().body(message)
 }
