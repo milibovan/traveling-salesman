@@ -71,6 +71,12 @@ lazy_static! {
 }
 
 fn main() {
+    let (all_cities, routes) = sequential_ga();
+
+    parallel_ga(all_cities, routes);
+}
+
+fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
     let now = Instant::now();
 
     let (all_cities, routes) = read_cities_and_routes();
@@ -115,8 +121,7 @@ fn main() {
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
-
-    parallel_ga(all_cities, routes);
+    (all_cities, routes)
 }
 
 fn print_best_solution(best_solution: &mut Option<Tour>) {
