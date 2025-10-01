@@ -9,8 +9,8 @@ import {
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import L from "leaflet";
-import SearchControlComponent from "./SearchControlComponent";
-import SelectedCities from "./SelectedCitiesComponent";
+import SearchControlComponent from "./SearchControl";
+import SelectedCities from "./SelectedCities";
 import "./MapComponent.css"
 
 // Leaflet Icon Fix (Kept from original code)

@@ -1,7 +1,7 @@
 import { OpenStreetMapProvider, GeoSearchControl } from "leaflet-geosearch";
 import { useMap } from "react-leaflet";
 import React from "react";
-import './SearchContorlComponent.css'
+import './SearchContorl.css'
 
 type LatLngTuple = L.LatLngTuple;
 
@@ -10,7 +10,7 @@ type MarkerData = {
   label: string;
 };
 
-const SearchControlComponent: React.FC<{
+const SearchControl: React.FC<{
   setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
 }> = ({ setMarkers }) => {
   const map = useMap();
@@ -58,4 +58,4 @@ const SearchControlComponent: React.FC<{
   return null;
 };
 
-export default SearchControlComponent;
+export default SearchControl;

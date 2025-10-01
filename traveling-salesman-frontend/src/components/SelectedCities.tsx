@@ -1,6 +1,6 @@
 import React from "react";
 import L from "leaflet";
-import "./SelectedCitiesComponent.css"; // <-- Import the new CSS file
+import "./SelectedCities.css"; 
 
 // Re-defining the types needed for the props (assuming these types are available/imported)
 type LatLngTuple = L.LatLngTuple;
@@ -15,11 +15,16 @@ interface MarkerListProps {
   // onSubmit: () => void;
 }
 
-const SelectedCitiesComponent: React.FC<MarkerListProps> = ({ markers }) => {
-  // Assuming the submission logic is handled inside this component for now
+const SelectedCities: React.FC<MarkerListProps> = ({ markers }) => {
   const handleSubmit = () => {
-    console.log("Submitting route for", markers.length, "stops...");
-    // Add actual submission logic here
+    const request = new XMLHttpRequest()
+ 
+    request.addEventListener('load', () => {
+      console.log(request.responseText)
+    })
+
+    request.open('POST', 'http://localhost:8080/calculate-tour')
+    request.send(JSON.stringify({markers}))
   };
 
   return (
@@ -54,4 +59,4 @@ const SelectedCitiesComponent: React.FC<MarkerListProps> = ({ markers }) => {
   );
 };
 
-export default SelectedCitiesComponent;
+export default SelectedCities;
