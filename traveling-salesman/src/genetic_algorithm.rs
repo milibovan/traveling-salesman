@@ -9,11 +9,18 @@ use crate::tour::{Tour};
 fn selection(population: &Population) -> Vec<Tour> {
     let mut best_tours: Vec<Tour> = Vec::new();
 
-    if let Some(best_tour) = population.tours.iter().min_by_key(|tour| tour.total_distance) {
+    if let Some(best_tour) = population.tours.iter()
+        .min_by(|a, b| {
+            a.total_distance.partial_cmp(&b.total_distance)
+                .unwrap_or(std::cmp::Ordering::Less)
+        }) {
         best_tours.push(best_tour.clone());
     }
 
-    if let Some(second_best_tour) =population.tours.iter().filter(|tour: &&Tour| {!best_tours.contains(&tour)}).min_by_key(|tour| tour.total_distance) {
+    if let Some(second_best_tour) =population.tours.iter().filter(|tour: &&Tour| {!best_tours.contains(&tour)}).min_by(|a, b| {
+        a.total_distance.partial_cmp(&b.total_distance)
+            .unwrap_or(std::cmp::Ordering::Less)
+    }) {
         best_tours.push(second_best_tour.clone());
     };
 

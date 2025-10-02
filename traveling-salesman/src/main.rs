@@ -13,6 +13,7 @@ mod genetic_algorithm;
 mod population;
 mod tour;
 mod server;
+mod marker;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -103,7 +104,10 @@ fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
     let mut best_solution = population
         .tours
         .iter()
-        .min_by_key(|tour| tour.total_distance)
+        .min_by(|a, b| {
+            a.total_distance.partial_cmp(&b.total_distance)
+                .unwrap_or(std::cmp::Ordering::Less)
+        })
         .cloned();
 
     for _ in 0..GLOBALS.max_generations {
@@ -112,7 +116,10 @@ fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
         if let Some(solution) = new_population
             .tours
             .iter()
-            .min_by_key(|tour| tour.total_distance)
+            .min_by(|a, b| {
+                a.total_distance.partial_cmp(&b.total_distance)
+                    .unwrap_or(std::cmp::Ordering::Less)
+            })
             .cloned()
         {
             if let Some(current_best) = &best_solution {
@@ -199,7 +206,10 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
             let mut best_solution = population
                 .tours
                 .iter()
-                .min_by_key(|tour| tour.total_distance)
+                .min_by(|a, b| {
+                    a.total_distance.partial_cmp(&b.total_distance)
+                        .unwrap_or(std::cmp::Ordering::Less)
+                })
                 .cloned();
 
             for generation in 0..GLOBALS.max_generations {
@@ -208,7 +218,10 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
                 if let Some(solution) = new_population
                     .tours
                     .iter()
-                    .min_by_key(|tour| tour.total_distance)
+                    .min_by(|a, b| {
+                        a.total_distance.partial_cmp(&b.total_distance)
+                            .unwrap_or(std::cmp::Ordering::Less)
+                    })
                     .cloned()
                 {
                     if let Some(current_best) = &best_solution {
@@ -248,7 +261,7 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
 
     let results: Vec<Tour> = handles.into_iter().map(|h| h.join().unwrap()).collect();
 
-    println!("{:?}", results.iter().min_by_key(|tour| {tour.total_distance}));
+    println!("{:?}", results.iter().min_by(|a, b| a.total_distance.partial_cmp(&b.total_distance).unwrap_or(std::cmp::Ordering::Less)));
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
