@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -27,7 +27,7 @@ type LatLngTuple = L.LatLngTuple;
 
 // New Marker Data Structure
 type MarkerData = {
-  position: LatLngTuple;
+  coordinates: LatLngTuple;
   label: string; // To store the city name/description
 };
 
@@ -37,18 +37,22 @@ type MarkerData = {
 const ClickHandler: React.FC<{
   setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
 }> = ({ setMarkers }) => {
+  // 1. Create a persistent counter using useRef
+  const clickCount = useRef(0);
+
   useMapEvents({
     click(e) {
       const newMarkerPosition: LatLngTuple = [e.latlng.lat, e.latlng.lng];
 
-      // For clicks, use a generic label and the current timestamp for uniqueness
+      clickCount.current += 1;
+
       const newMarker: MarkerData = {
-        position: newMarkerPosition,
-        label: `Manual Click`,
+        coordinates: newMarkerPosition,
+        label: `Manual Click ${clickCount.current}`, // <-- Updated Label
       };
 
       setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
-    //   console.log("New Marker Added (Click):", newMarkerPosition);
+      // console.log("New Marker Added (Click):", newMarker);
     },
   });
 
@@ -100,11 +104,11 @@ const MapComponent: React.FC<MapComponentProps> = () => {
 
         {/* Render Markers */}
         {markers.map((marker, index) => (
-          <Marker key={index} position={marker.position}>
+          <Marker key={index} position={marker.coordinates}>
             <Popup>
               **{marker.label}** <br />
-              Lat: {marker.position[0].toFixed(3)}, Lng:{" "}
-              {marker.position[1].toFixed(3)}
+              Lat: {marker.coordinates[0].toFixed(3)}, Lng:{" "}
+              {marker.coordinates[1].toFixed(3)}
             </Popup>
           </Marker>
         ))}

@@ -5,7 +5,7 @@ import "./SelectedCities.css";
 // Re-defining the types needed for the props (assuming these types are available/imported)
 type LatLngTuple = L.LatLngTuple;
 type MarkerData = {
-  position: LatLngTuple;
+  coordinates: LatLngTuple;
   label: string;
 };
 
@@ -24,7 +24,8 @@ const SelectedCities: React.FC<MarkerListProps> = ({ markers }) => {
     })
 
     request.open('POST', 'http://localhost:8080/calculate-tour')
-    request.send(JSON.stringify({markers}))
+    request.setRequestHeader("Content-Type", "application/json");
+    request.send(JSON.stringify(markers))
   };
 
   return (
@@ -42,8 +43,8 @@ const SelectedCities: React.FC<MarkerListProps> = ({ markers }) => {
               <strong>Stop {index + 1}:</strong> {marker.label}
               <br />
               <span className="marker-list-coords">
-                ({marker.position[0].toFixed(3)},{" "}
-                {marker.position[1].toFixed(3)})
+                ({marker.coordinates[0].toFixed(3)},{" "}
+                {marker.coordinates[1].toFixed(3)})
               </span>
             </li>
           ))}
