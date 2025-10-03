@@ -125,15 +125,73 @@ src/
 
 ├── tour.rs          # Tour representation and distance calculation
 
+├── server.rs        # Server implementation for frontend
+
+
 ## 🔮 Future Improvements
 
 Integration with TSPLIB datasets for standardized testing.
 
-Visualization of evolving tours.
-
 Implementation of a hybrid GA with a local search heuristic.
 
 Experiment logging and benchmarking for better performance analysis.
+
+***
+# 🌐 Traveling Salesman Frontend
+
+This project includes a React-based frontend  application designed for visualizing and interacting with the TSP solver.
+
+It utilizes TypeScript for robust development and the Leaflet map library for geographical display.
+
+## 🗺️ Features
+
+Interactive City Selection: Users can select checkpoints directly on the map interface.
+
+Search Bar Integration: Allows adding cities to the problem set via a search bar.
+
+Visualization: Displays the solved TSP tour on the map.
+
+Real-time Communication: Connects to the Rust server on port 8080 for problem-solving and visualization.
+
+##💻 Installation & Usage
+
+Make sure you have Node.js and npm installed. The project is built with Vite.
+
+Navigate to the frontend directory (if separate, or as part of the main clone).
+
+Install dependencies:
+
+`npm install`
+
+Run the development server:
+
+`npm run dev`
+
+The frontend server will typically run on http://localhost:5173/, connecting to the Rust TSP server, which runs by default on port 8080.
+
+## 📂 Frontend Structure
+
+The core frontend implementation is detailed in the following files:
+
+traveling-salesman/
+
+├── traveling-salesman             # Rust implementation
+
+├── traveling-salesman-frontend    # Root directory for the React/TypeScript frontend
+
+│   ├── src/
+
+│   │   ├── components/   # React components (e.g., map, city search)
+
+│   │   ├── App.tsx       # Main application component
+
+│   │   └── main.tsx      # Entry point
+
+│   ├── index.html
+
+│   └── package.json
+
+└── ...
 
 ## 📜 License
 
