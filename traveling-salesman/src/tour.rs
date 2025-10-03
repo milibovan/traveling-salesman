@@ -37,25 +37,29 @@ impl Tour {
             total_distance: 0.0,
         };
 
-        let num_cities = cities.len();
+        tour.calculate_tour_distance_with_markers(cities);
+
+        tour
+    }
+
+    pub fn calculate_tour_distance_with_markers(&mut self, cities: Vec<Marker>) {
+        let num_cities = self.cities.len();
 
         if num_cities < 2 {
-            return tour;
+            return;
         }
 
         for i in 0..num_cities - 1 {
-            tour.total_distance += Tour::haversine_distance(
+            self.total_distance += Tour::haversine_distance(
                 cities[i].coordinates,
                 cities[i + 1].coordinates
             ) ;
         }
 
-        tour.total_distance += Tour::haversine_distance(
+        self.total_distance += Tour::haversine_distance(
             cities[num_cities - 1].coordinates,
             cities[0].coordinates
         );
-
-        tour
     }
 
     pub fn calculate_tour_distance(&mut self, routes: &HashSet<Route>) {

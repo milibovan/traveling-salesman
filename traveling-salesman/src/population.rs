@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use crate::{Route, GLOBALS};
+use crate::marker::Marker;
 use crate::tour::{Tour};
 
 pub struct Population {
@@ -18,6 +19,14 @@ impl Population {
     pub fn init_tours(&mut self, all_cities: Vec<String>, routes: &HashSet<Route>) {
         for _ in 0..GLOBALS.population_size {
             self.tours.push(Tour::init_tour(all_cities.clone(), routes));
+        }
+        for tour in self.tours.iter() {
+            self.fitness += tour.total_distance as f32;
+        }
+    }
+    pub fn init_tours_markers(&mut self, all_cities: Vec<Marker>) {
+        for _ in 0..GLOBALS.population_size {
+            self.tours.push(Tour::init_tour_with_markers(all_cities.clone()));
         }
         for tour in self.tours.iter() {
             self.fitness += tour.total_distance as f32;

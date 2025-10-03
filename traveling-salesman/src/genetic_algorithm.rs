@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use rand::{rng, Rng};
 use crate::{Route, GLOBALS};
+use crate::marker::Marker;
 use crate::population::Population;
 use crate::tour::{Tour};
 
@@ -28,10 +29,14 @@ fn selection(population: &Population) -> Vec<Tour> {
 }
 
 // Crossover function to cut genomes and mix them
-fn crossover(parent1: &Tour, parent2: &Tour, routes: &HashSet<Route>) -> Tour {
+fn crossover(parent1: &Tour, parent2: &Tour, routes: &HashSet<Route>, mut no_cities: i32) -> Tour {
+    if no_cities == 0 {
+        no_cities = GLOBALS.no_cities;
+    }
+
     let mut cities: Vec<String> = Vec::new();
 
-    let pivot: usize = rng().random_range(0..GLOBALS.no_cities) as usize;
+    let pivot: usize = rng().random_range(0..no_cities) as usize;
 
     for i in 0..pivot {
         cities.push(parent1.cities[i].clone());
@@ -48,10 +53,16 @@ fn crossover(parent1: &Tour, parent2: &Tour, routes: &HashSet<Route>) -> Tour {
 }
 
 // Mutation with certain possibility mutate bits in solution
-fn mutation(tour: &mut Tour){
-    for index1 in 0..GLOBALS.no_cities {
+fn mutation(tour: &mut Tour, no_cities: i32){
+    let mut collection_size = 0;
+    if no_cities != 0 {
+        collection_size = no_cities;
+    } else {
+        collection_size = GLOBALS.no_cities;
+    }
+    for index1 in 0..collection_size {
         if rng().random_range(0.0..1.0) <= GLOBALS.mutation_possibility {
-            let index2 = rng().random_range(0..GLOBALS.no_cities) as usize;
+            let index2 = rng().random_range(0..collection_size) as usize;
 
             tour.cities.swap(index1 as usize, index2);
         }
@@ -59,7 +70,7 @@ fn mutation(tour: &mut Tour){
 }
 
 // Evolution, main loop of ga
-pub fn evolution(population: &mut Population, routes: &HashSet<Route>) -> Population {
+pub fn evolution(population: &mut Population, routes: &HashSet<Route>, cities: Vec<Marker>) -> Population {
     let mut new_population = Population::new();
 
     let best_tours = selection(population);
@@ -70,14 +81,21 @@ pub fn evolution(population: &mut Population, routes: &HashSet<Route>) -> Popula
         if new_population.tours.len() == GLOBALS.population_size as usize {
             break;
         }
-        let mut child = crossover(&best_tours[0], &best_tours[1], &routes);
-        mutation(&mut child);
+        let mut child = crossover(&best_tours[0], &best_tours[1], &routes, cities.len() as i32);
+        mutation(&mut child, cities.len() as i32);
         new_population.tours.push(child);
     }
 
-    for tour in new_population.tours.iter_mut() {
-        tour.calculate_tour_distance(routes);
+    if routes.len() == 0 {
+        for tour in new_population.tours.iter_mut() {
+            tour.calculate_tour_distance_with_markers(cities.clone());
+        }
+    } else {
+        for tour in new_population.tours.iter_mut() {
+            tour.calculate_tour_distance(routes);
+        }
     }
+
 
     new_population
 }

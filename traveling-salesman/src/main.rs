@@ -111,7 +111,7 @@ fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
         .cloned();
 
     for _ in 0..GLOBALS.max_generations {
-        let new_population = evolution(&mut population, &routes);
+        let new_population = evolution(&mut population, &routes, Vec::new());
 
         if let Some(solution) = new_population
             .tours
@@ -134,7 +134,7 @@ fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
         population = new_population;
     }
 
-    print_best_solution(&mut best_solution);
+    // print_best_solution(&mut best_solution);
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
@@ -144,7 +144,7 @@ fn sequential_ga() -> (HashSet<String>, HashSet<Route>) {
 fn print_best_solution(best_solution: &mut Option<Tour>) {
     if let Some(tour) = best_solution {
         println!("Best tour found after {} generations:", GLOBALS.max_generations);
-        println!("Distance: {}", tour.total_distance);
+        println!("Distance: {}km", tour.total_distance);
         println!("{:?}", tour);
     } else {
         println!("No solution found.");
@@ -213,7 +213,7 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
                 .cloned();
 
             for generation in 0..GLOBALS.max_generations {
-                let new_population = evolution(&mut population, &routes);
+                let new_population = evolution(&mut population, &routes, Vec::new());
 
                 if let Some(solution) = new_population
                     .tours
@@ -252,16 +252,16 @@ fn parallel_ga(all_cities: HashSet<String>, routes: HashSet<Route>) {
             }
 
 
-            print_best_solution(&mut best_solution);
+            // print_best_solution(&mut best_solution);
             best_solution.unwrap()
         });
 
         handles.push(handle);
     }
 
-    let results: Vec<Tour> = handles.into_iter().map(|h| h.join().unwrap()).collect();
+    let _results: Vec<Tour> = handles.into_iter().map(|h| h.join().unwrap()).collect();
 
-    println!("{:?}", results.iter().min_by(|a, b| a.total_distance.partial_cmp(&b.total_distance).unwrap_or(std::cmp::Ordering::Less)));
+    // println!("{:?}", results.iter().min_by(|a, b| a.total_distance.partial_cmp(&b.total_distance).unwrap_or(std::cmp::Ordering::Less)));
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
