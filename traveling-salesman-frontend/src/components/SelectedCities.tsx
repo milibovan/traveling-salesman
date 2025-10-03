@@ -15,6 +15,8 @@ const SelectedCities: React.FC<MarkerListProps> = ({
   setMarkers,
   setCounter,
 }) => {
+  
+  // TODO On submit to rearange stops as returned
   const handleSubmit = () => {
     const request = new XMLHttpRequest();
 
