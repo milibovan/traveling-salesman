@@ -1,31 +1,40 @@
 import React from "react";
-import L from "leaflet";
-import "./SelectedCities.css"; 
-
-// Re-defining the types needed for the props (assuming these types are available/imported)
-type LatLngTuple = L.LatLngTuple;
-type MarkerData = {
-  coordinates: LatLngTuple;
-  label: string;
-};
+import "./SelectedCities.css";
+import type { MarkerData, RouteResponse } from "./utils/utils";
 
 interface MarkerListProps {
   markers: MarkerData[];
-  // If you pass a submission handler, its type should be added here:
-  // onSubmit: () => void;
+  onRouteCalculated: (response: RouteResponse) => void;
+  setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
+  setCounter: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const SelectedCities: React.FC<MarkerListProps> = ({ markers }) => {
+const SelectedCities: React.FC<MarkerListProps> = ({
+  markers,
+  onRouteCalculated,
+  setMarkers,
+  setCounter,
+}) => {
   const handleSubmit = () => {
-    const request = new XMLHttpRequest()
- 
-    request.addEventListener('load', () => {
-      console.log(request.responseText)
-    })
+    const request = new XMLHttpRequest();
 
-    request.open('POST', 'http://localhost:8080/calculate-tour')
+    request.addEventListener("load", () => {
+      const routeData = JSON.parse(request.responseText);
+      console.log(routeData);
+
+      onRouteCalculated(routeData);
+    });
+
+    request.open("POST", "http://localhost:8080/calculate-tour");
     request.setRequestHeader("Content-Type", "application/json");
-    request.send(JSON.stringify(markers))
+    request.send(JSON.stringify(markers));
+  };
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to clear all selected stops?")) {
+      setMarkers([]);
+      setCounter(1);
+    }
   };
 
   return (
@@ -52,9 +61,14 @@ const SelectedCities: React.FC<MarkerListProps> = ({ markers }) => {
       )}
 
       {markers.length > 0 && (
-        <button className="submit-route-button" onClick={handleSubmit}>
-          Submit Route
-        </button>
+        <>
+          <button className="submit-route-button" onClick={handleSubmit}>
+            Submit Route
+          </button>
+          <button className="delete-route-button" onClick={handleDelete}>
+            Delete stops
+          </button>
+        </>
       )}
     </div>
   );

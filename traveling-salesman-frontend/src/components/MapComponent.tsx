@@ -5,13 +5,17 @@ import {
   Marker,
   Popup,
   useMapEvents,
+  Polyline,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import L from "leaflet";
 import SearchControlComponent from "./SearchControl";
 import SelectedCities from "./SelectedCities";
-import "./MapComponent.css"
+import "./MapComponent.css";
+import "leaflet-polylinedecorator";
+import DrawArrows from "./DrawArrows";
+import type { LatLngTuple, MarkerData } from "./utils/utils";
 
 // Leaflet Icon Fix (Kept from original code)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -23,32 +27,25 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-type LatLngTuple = L.LatLngTuple;
-
-// New Marker Data Structure
-type MarkerData = {
-  coordinates: LatLngTuple;
-  label: string; // To store the city name/description
-};
-
 // ----------------------------------------------------------------------
 // 1. Click Handler Component (UPDATED to use MarkerData)
 // ----------------------------------------------------------------------
 const ClickHandler: React.FC<{
   setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
-}> = ({ setMarkers }) => {
-  // 1. Create a persistent counter using useRef
-  const clickCount = useRef(0);
+  counter: number;
+  setCounter: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ setMarkers, counter, setCounter }) => {
 
   useMapEvents({
     click(e) {
       const newMarkerPosition: LatLngTuple = [e.latlng.lat, e.latlng.lng];
 
-      clickCount.current += 1;
+      const currentCounter = counter + 1;
+      setCounter(currentCounter)
 
       const newMarker: MarkerData = {
         coordinates: newMarkerPosition,
-        label: `Manual Click ${clickCount.current}`, // <-- Updated Label
+        label: `Manual Click ${counter}`,
       };
 
       setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
@@ -59,29 +56,37 @@ const ClickHandler: React.FC<{
   return null;
 };
 
-// ----------------------------------------------------------------------
-// 3. Main Map Component (Render and List)
-// ----------------------------------------------------------------------
 interface MapComponentProps {}
 
 const MapComponent: React.FC<MapComponentProps> = () => {
   // Use the new MarkerData array state
   const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [orderedMarkers, setOrderedMarkers] = useState<MarkerData[]>([]);
+  const [counter, setCounter] = useState<number>(1);
   const initialPosition: LatLngTuple = [45.257, 19.842];
   const initialZoom: number = 13;
 
-  // Logging (now logs the label too)
-//   if (markers.length > 0) {
-//     markers.forEach((marker, index) => {
-//       console.log(
-//         `Marker ${index + 1} (${
-//           marker.label
-//         }): Lat: ${marker.position[0].toFixed(
-//           3
-//         )}, Lng: ${marker.position[1].toFixed(3)}`
-//       );
-//     });
-//   }
+  const onRouteCalculated = (routeData: {
+    cities: string[];
+    total_distance: number;
+  }) => {
+    const cityMap = new Map(markers.map((m) => [m.label, m]));
+    const newOrder = routeData.cities
+      .map((city) => cityMap.get(city))
+      .filter((m): m is MarkerData => !!m);
+
+    setOrderedMarkers(newOrder);
+    window.alert("Shortest route is: " + routeData.total_distance + "km")
+  };
+
+  const polylineCoordinates = orderedMarkers.length > 0
+    ? orderedMarkers.map((m) => m.coordinates)
+    : [];
+
+  // If there are markers, add the first one again to close the loop
+  if (polylineCoordinates.length > 0 && orderedMarkers.length > 1) {
+    polylineCoordinates.push(polylineCoordinates[0]);
+  }
 
   return (
     // Use a flex container to place the map and list side-by-side
@@ -100,7 +105,7 @@ const MapComponent: React.FC<MapComponentProps> = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <ClickHandler setMarkers={setMarkers} />
+        <ClickHandler setMarkers={setMarkers} counter={counter} setCounter={setCounter}/>
 
         {/* Render Markers */}
         {markers.map((marker, index) => (
@@ -112,8 +117,24 @@ const MapComponent: React.FC<MapComponentProps> = () => {
             </Popup>
           </Marker>
         ))}
+
+        {orderedMarkers.length > 1 && (
+          <Polyline
+            // Use the closed loop coordinates
+            positions={polylineCoordinates}
+            pathOptions={{ color: "blue", weight: 3 }}
+          />
+        )}
+
+        {/* Arrowheads (decorators) */}
+        {orderedMarkers.length > 1 && (
+          <DrawArrows 
+            // Use the closed loop coordinates
+            coordinates={polylineCoordinates} 
+          />
+        )}
       </MapContainer>
-        <SelectedCities markers={markers}/>
+      <SelectedCities markers={markers} onRouteCalculated={onRouteCalculated} setMarkers={setMarkers} setCounter={setCounter}/>
     </div>
   );
 };

@@ -1,35 +1,60 @@
 /* Container for the marker list */
 .marker-list-sidebar {
-    width: 30%; 
-    min-width: 200px; 
-    max-height: 60vh; 
-    overflow-y: auto; 
-    border: 1px solid #ccc; 
-    padding: 15px;
-    box-sizing: border-box; /* Ensures padding/border is included in the width */
+  width: 30%;
+  min-width: 200px;
+  max-height: 60vh;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 15px;
+  box-sizing: border-box; /* Ensures padding/border is included in the width */
 }
 
 /* Style for the ordered list */
 .marker-list-ordered {
-    padding-left: 20px;
-    margin-top: 10px;
+  padding-left: 20px;
+  margin-top: 10px;
 }
 
 /* Style for individual list items */
 .marker-list-item {
-    margin-bottom: 8px; 
-    border-bottom: 1px dotted #eee; 
-    padding-bottom: 5px; 
+  margin-bottom: 8px;
+  border-bottom: 1px dotted #eee;
+  padding-bottom: 5px;
 }
 
 /* Style for coordinates text */
 .marker-list-coords {
-    font-size: 1.0em; /* No change from original, but good to have control */
-    color: rgb(16, 160, 204);
+  font-size: 1em; /* No change from original, but good to have control */
+  color: rgb(16, 160, 204);
 }
 
 /* Style for the empty state message */
 .marker-list-empty-text {
-    color: #666;
-    font-style: italic;
+  color: #666;
+  font-style: italic;
+}
+
+.submit-route-button {
+  width: 70%;
+}
+.delete-route-button {
+  margin: 5%;
+  width: 70%;
+  margin-top: 5%;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #b10000;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.25s;
+}
+
+.delete-route-button:hover {
+  border-color: #cc0000;
+  background-color: #770101;
+  color: #ffffff;
 }

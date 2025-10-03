@@ -1,14 +1,8 @@
 import { OpenStreetMapProvider, GeoSearchControl } from "leaflet-geosearch";
 import { useMap } from "react-leaflet";
 import React from "react";
-import './SearchContorl.css'
-
-type LatLngTuple = L.LatLngTuple;
-
-type MarkerData = {
-  position: LatLngTuple;
-  label: string;
-};
+import "./SearchContorl.css";
+import type { MarkerData } from "./utils/utils";
 
 const SearchControl: React.FC<{
   setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
@@ -16,9 +10,7 @@ const SearchControl: React.FC<{
   const map = useMap();
   const searchControlRef = React.useRef<L.Control | null>(null);
 
-  // useEffect for initializing the control and listeners
   React.useEffect(() => {
-    // --- 1. Control Initialization (Only happens once) ---
     if (searchControlRef.current === null) {
       const provider = new OpenStreetMapProvider();
 
@@ -36,20 +28,17 @@ const SearchControl: React.FC<{
       map.addControl(searchControlRef.current as L.Control);
     }
 
-    // --- 2. Event Listener Setup ---
     const eventHandler = (result: any) => {
       const { x, y, label } = result.location;
       const newMarker: MarkerData = {
-                position: [y, x],
-                label: label || `Marker ${Date.now()}`
-            };
+        coordinates: [y, x],
+        label: label || `Marker ${Date.now()}`,
+      };
       setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
-      // console.log(`New Marker Added (Search): ${label}`, newMarker);
     };
 
     map.on("geosearch/showlocation", eventHandler);
 
-    // --- 4. Cleanup Function ---
     return () => {
       map.off("geosearch/showlocation", eventHandler);
     };
