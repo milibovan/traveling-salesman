@@ -1,10 +1,11 @@
 use std::collections::HashSet;
 use rand::{rng};
 use rand::seq::SliceRandom;
+use serde::Serialize;
 use crate::{Route};
 use crate::marker::Marker;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize)]
 #[derive(Clone)]
 pub struct Tour {
     pub(crate) cities: Vec<String>,

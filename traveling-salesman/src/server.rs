@@ -1,10 +1,12 @@
 use std::collections::HashSet;
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use actix_cors::Cors;
+use serde_json::json;
 use crate::genetic_algorithm::evolution;
 use crate::{print_best_solution, GLOBALS};
 use crate::marker::Marker;
 use crate::population::Population;
+use crate::tour::Tour;
 
 #[post("/calculate-tour")]
 async fn calculate_tour(markers: web::Json<Vec<Marker>>) -> impl Responder {
@@ -14,9 +16,9 @@ async fn calculate_tour(markers: web::Json<Vec<Marker>>) -> impl Responder {
         println!("Label: {}, Lat: {}, Lng: {}", marker.label, marker.coordinates.0, marker.coordinates.1);
     }
 
-    ga_markers(markers.clone());
+    let best_tour = ga_markers(markers.clone());
 
-    web::Json(format!("Processed markers successfully!"))
+    web::Json(json!(best_tour))
 }
 
 async fn server_implementation() -> impl Responder {
@@ -45,7 +47,7 @@ pub async fn start_server() -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn ga_markers(markers: Vec<Marker>) {
+pub fn ga_markers(markers: Vec<Marker>) -> Tour{
     let mut population = Population::new();
 
     population.init_tours_markers(markers.clone());
@@ -84,4 +86,5 @@ pub fn ga_markers(markers: Vec<Marker>) {
     }
 
     print_best_solution(&mut best_solution);
+    best_solution.unwrap()
 }
